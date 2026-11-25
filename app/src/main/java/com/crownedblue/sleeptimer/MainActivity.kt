@@ -45,12 +45,14 @@ class MainActivity : ComponentActivity() {
 private val BG = Color(0xFF080A0F)
 private val Glass = Color(0x18FFFFFF)
 private val Border = Color(0x30FFFFFF)
-private val Accent = Color(0xFFB9F4E5)
+private val Accent = Color(0xFF8EAED8)
+private val AccentDeep = Color(0xFF243B58)
+private val AccentGlass = Color(0x553C5F88
 
 @Composable
 fun SleepTimerScreen(activity: Activity) {
     val prefs = activity.getSharedPreferences("timer", Context.MODE_PRIVATE)
-    var selected by remember { mutableFloatStateOf(prefs.getInt("minutes", 30).toFloat()) }
+    var selected by remember { mutableFloatStateOf((prefs.getInt("durationSeconds", prefs.getInt("minutes", 30) * 60) / 60f).coerceIn(0f, 120f)) }
     var active by remember { mutableStateOf(prefs.getBoolean("running", false)) }
     var remaining by remember { mutableLongStateOf(0L) }
     var paused by remember { mutableStateOf(false) }
@@ -69,7 +71,7 @@ fun SleepTimerScreen(activity: Activity) {
     val notificationLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
     Box(Modifier.fillMaxSize().background(BG)) {
-        Box(Modifier.size(280.dp).align(Alignment.TopCenter).offset(y = (-100).dp).blur(100.dp).background(Color(0xFF5D8B86).copy(alpha=.22f), CircleShape))
+        Box(Modifier.size(280.dp).align(Alignment.TopCenter).offset(y = (-100).dp).blur(100.dp).background(Color(0xFF456D9C).copy(alpha=.22f), CircleShape))
         Box(Modifier.size(240.dp).align(Alignment.BottomEnd).offset(x=90.dp,y=80.dp).blur(90.dp).background(Color(0xFF5D70A5).copy(alpha=.15f), CircleShape))
         Column(Modifier.fillMaxSize().padding(horizontal=26.dp, vertical=22.dp), horizontalAlignment=Alignment.CenterHorizontally) {
             Row(Modifier.fillMaxWidth(), verticalAlignment=Alignment.CenterVertically) {
@@ -82,8 +84,8 @@ fun SleepTimerScreen(activity: Activity) {
                 }
             }
             Spacer(Modifier.weight(.14f))
-            Box(Modifier.size(280.dp).clip(CircleShape).background(Brush.radialGradient(listOf(Color(0x1ECAEBDD), Color(0x08FFFFFF), Color.Transparent))).border(1.dp, Color.White.copy(.10f), CircleShape), contentAlignment=Alignment.Center) {
-                Box(Modifier.size(245.dp).clip(CircleShape).background(Brush.linearGradient(listOf(Color(0x16FFFFFF), Color(0x04FFFFFF), Color(0x10B7E8D7)))).border(1.dp, Color.White.copy(.13f), CircleShape), contentAlignment=Alignment.Center) {
+            Box(Modifier.size(280.dp).clip(CircleShape).background(Brush.radialGradient(listOf(Color(0x1E9CBDE5), Color(0x08FFFFFF), Color.Transparent))).border(1.dp, Color.White.copy(.10f), CircleShape), contentAlignment=Alignment.Center) {
+                Box(Modifier.size(245.dp).clip(CircleShape).background(Brush.linearGradient(listOf(Color(0x16FFFFFF), Color(0x04FFFFFF), Color(0x103C6798)))).border(1.dp, Color.White.copy(.13f), CircleShape), contentAlignment=Alignment.Center) {
                     Column(horizontalAlignment=Alignment.CenterHorizontally) {
                         Text(if (active && !paused) "REMAINING" else "DURATION", color=Color.White.copy(.45f), letterSpacing=2.4.sp, fontSize=10.sp)
                         Spacer(Modifier.height(12.dp))
@@ -97,16 +99,16 @@ fun SleepTimerScreen(activity: Activity) {
             GlassPanel {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.SpaceBetween, verticalAlignment=Alignment.CenterVertically) {
                     Text("SET DURATION", color=Color.White.copy(.65f), fontSize=11.sp, letterSpacing=1.6.sp)
-                    Text("${selected.toInt()} min", color=Accent, fontSize=14.sp, fontWeight=FontWeight.Medium)
+                    Text(if(selected.toInt()==0) "10 sec" else "${selected.toInt()} min", color=Accent, fontSize=14.sp, fontWeight=FontWeight.Medium)
                 }
-                Slider(value=selected, onValueChange={ if(!active) selected=it }, valueRange=2f..60f, steps=57, enabled=!active, colors=SliderDefaults.colors(thumbColor=Accent, activeTrackColor=Accent, inactiveTrackColor=Color.White.copy(.12f)))
-                Row(Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.SpaceBetween) { Text("2 min", color=Color.White.copy(.35f), fontSize=10.sp); Text("30 min", color=Color.White.copy(.35f), fontSize=10.sp); Text("60 min", color=Color.White.copy(.35f), fontSize=10.sp) }
+                Slider(value=selected, onValueChange={ if(!active) selected=it }, valueRange=0f..120f, steps=119, enabled=!active, colors=SliderDefaults.colors(thumbColor=Accent, activeTrackColor=Accent, inactiveTrackColor=Color.White.copy(.12f), activeTickColor=AccentDeep, inactiveTickColor=Color.White.copy(.18f)))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.SpaceBetween) { Text("10 sec", color=Color.White.copy(.35f), fontSize=10.sp); Text("60 min", color=Color.White.copy(.35f), fontSize=10.sp); Text("2 hr", color=Color.White.copy(.35f), fontSize=10.sp) }
             }
             Spacer(Modifier.height(20.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.spacedBy(12.dp)) {
                 Button(onClick={
                     if (!active) {
-                        prefs.edit().putInt("minutes", selected.toInt()).putBoolean("running", true).putBoolean("paused", false).putLong("endAt",System.currentTimeMillis()+selected.toInt()*60_000L).apply()
+                        val durationSeconds = if(selected.toInt()==0) 10 else selected.toInt()*60\n                        prefs.edit().putInt("minutes", if(selected.toInt()==0) 1 else selected.toInt()).putInt("durationSeconds", durationSeconds).putBoolean("running", true).putBoolean("paused", false).putLong("endAt",System.currentTimeMillis()+durationSeconds*1000L).apply()
                         val intent=Intent(activity,TimerService::class.java).setAction(TimerService.ACTION_START)
                         if(Build.VERSION.SDK_INT>=26) activity.startForegroundService(intent) else activity.startService(intent)
                         active=true
@@ -117,7 +119,7 @@ fun SleepTimerScreen(activity: Activity) {
                         prefs.edit().putBoolean("paused",true).putLong("remaining",remaining*1000).apply()
                         activity.startService(Intent(activity,TimerService::class.java).setAction(TimerService.ACTION_PAUSE))
                     }
-                }, modifier=Modifier.weight(1f).height(58.dp), shape=RoundedCornerShape(20.dp), colors=ButtonDefaults.buttonColors(containerColor=Accent, contentColor=Color(0xFF101916))) {
+                }, modifier=Modifier.weight(1f).height(58.dp), shape=RoundedCornerShape(20.dp), colors=ButtonDefaults.buttonColors(containerColor=AccentDeep, contentColor=Color(0xFFEAF2FC))) {
                     Icon(if(active&&!paused) Icons.Default.Pause else Icons.Default.PlayArrow, null)
                     Spacer(Modifier.width(8.dp)); Text(if(!active) "START TIMER" else if(paused) "RESUME" else "PAUSE", fontWeight=FontWeight.SemiBold, letterSpacing=1.sp)
                 }

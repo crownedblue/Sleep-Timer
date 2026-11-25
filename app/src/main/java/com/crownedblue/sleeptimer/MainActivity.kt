@@ -89,9 +89,9 @@ fun SleepTimerScreen(activity: Activity) {
                     Column(horizontalAlignment=Alignment.CenterHorizontally) {
                         Text(if (active && !paused) "REMAINING" else "DURATION", color=Color.White.copy(.45f), letterSpacing=2.4.sp, fontSize=10.sp)
                         Spacer(Modifier.height(12.dp))
-                        Text(formatTime(if (active) remaining else selected.toLong()*60), color=Color.White, fontSize=54.sp, fontWeight=FontWeight.Light, letterSpacing=(-2).sp)
+                        Text(formatTime(if (active) remaining else if(selected.toInt()==0) 10L else selected.toLong()*60), color=Color.White, fontSize=54.sp, fontWeight=FontWeight.Light, letterSpacing=(-2).sp)
                         Spacer(Modifier.height(7.dp))
-                        Text(if(active) if(paused) "PAUSED" else "COUNTING DOWN" else "MINUTES", color=Accent.copy(.75f), fontSize=10.sp, letterSpacing=2.sp)
+                        Text(if(active) if(paused) "PAUSED" else "COUNTING DOWN" else if(selected.toInt()==0) "SECONDS" else "MINUTES", color=Accent.copy(.75f), fontSize=10.sp, letterSpacing=2.sp)
                     }
                 }
             }

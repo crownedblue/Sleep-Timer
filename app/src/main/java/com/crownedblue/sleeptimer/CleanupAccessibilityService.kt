@@ -19,7 +19,7 @@ class CleanupAccessibilityService : AccessibilityService() {
     override fun onInterrupt() {}
     private fun runCleanup(){
         performGlobalAction(GLOBAL_ACTION_RECENTS)
-        h.postDelayed({ tapText(rootInActiveWindow,listOf("Clear all","Close all","CLEAR ALL","清除全部","সব বন্ধ করুন")) },1300)
+        h.postDelayed({ tapText(rootInActiveWindow,listOf("Clear all","Close all","Close","CLEAR ALL","清除全部","সব বন্ধ করুন")) },1300)
         h.postDelayed({ performGlobalAction(GLOBAL_ACTION_QUICK_SETTINGS) },2400)
         h.postDelayed({ tapBluetoothTile(rootInActiveWindow) },3400)
         h.postDelayed({ lockDevice() },5000)

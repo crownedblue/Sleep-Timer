@@ -47,7 +47,7 @@ private val Glass = Color(0x18FFFFFF)
 private val Border = Color(0x30FFFFFF)
 private val Accent = Color(0xFF8EAED8)
 private val AccentDeep = Color(0xFF243B58)
-private val AccentGlass = Color(0x553C5F88
+private val AccentGlass = Color(0x553C5F88)
 
 @Composable
 fun SleepTimerScreen(activity: Activity) {
@@ -108,7 +108,8 @@ fun SleepTimerScreen(activity: Activity) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.spacedBy(12.dp)) {
                 Button(onClick={
                     if (!active) {
-                        val durationSeconds = if(selected.toInt()==0) 10 else selected.toInt()*60\n                        prefs.edit().putInt("minutes", if(selected.toInt()==0) 1 else selected.toInt()).putInt("durationSeconds", durationSeconds).putBoolean("running", true).putBoolean("paused", false).putLong("endAt",System.currentTimeMillis()+durationSeconds*1000L).apply()
+                        val durationSeconds = if(selected.toInt()==0) 10 else selected.toInt()*60
+                        prefs.edit().putInt("minutes", if(selected.toInt()==0) 1 else selected.toInt()).putInt("durationSeconds", durationSeconds).putBoolean("running", true).putBoolean("paused", false).putLong("endAt",System.currentTimeMillis()+durationSeconds*1000L).apply()
                         val intent=Intent(activity,TimerService::class.java).setAction(TimerService.ACTION_START)
                         if(Build.VERSION.SDK_INT>=26) activity.startForegroundService(intent) else activity.startService(intent)
                         active=true
